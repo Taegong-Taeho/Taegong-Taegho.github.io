@@ -11,7 +11,1431 @@
   :root {
     --bg: #0A0A14;
     --bg2: #0F0F1E;
+    --bg3: #141428;<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영혼의 나침반 — Soul Compass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root {
+    --bg: #0A0A14;
+    --bg2: #0F0F1E;
     --bg3: #141428;
+    --gold: #C9A84C;
+    --gold-dim: rgba(201,168,76,0.15);
+    --purple: #7B5EA7;
+    --teal: #4ECDC4;
+    --coral: #E8736C;
+    --silver: #B8BCC8;
+    --silver-dim: rgba(184,188,200,0.4);
+    --white: #E8E9F0;
+
+    /* layer colors */
+    --body-c: #E8736C;
+    --soul-c: #7B5EA7;
+    --spirit-c: #4ECDC4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Inter', 'Noto Serif KR', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── COSMIC BACKGROUND ─── */
+  #cosmos {
+    position: fixed; inset: 0; z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  #cosmos canvas { width: 100%; height: 100%; }
+
+  /* ─── SCREENS ─── */
+  .screen {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+  }
+  .screen.active { display: flex; }
+
+  /* ─── START SCREEN ─── */
+  #screen-start {
+    text-align: center;
+    gap: 0;
+  }
+
+  .logo-orb {
+    width: 120px; height: 120px;
+    margin: 0 auto 2.5rem;
+    position: relative;
+  }
+  .logo-orb .ring {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    animation: orbSpin linear infinite;
+  }
+  .ring-1 { border: 1.5px solid rgba(232,115,108,0.6); animation-duration: 8s; }
+  .ring-2 { inset: 12px; border: 1.5px solid rgba(123,94,167,0.6); animation-duration: 12s; animation-direction: reverse; }
+  .ring-3 { inset: 24px; border: 1.5px solid rgba(78,205,196,0.6); animation-duration: 16s; }
+  .ring-core {
+    position: absolute; inset: 36px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.4), rgba(201,168,76,0.05));
+    box-shadow: 0 0 30px rgba(201,168,76,0.3);
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes orbSpin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%,100% { opacity:0.7; transform:scale(1); } 50% { opacity:1; transform:scale(1.08); } }
+
+  .start-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.35em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .start-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    font-weight: 300;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    margin-bottom: 0.4rem;
+  }
+  .start-title span { color: var(--gold); }
+  .start-sub {
+    font-size: 0.85rem;
+    color: var(--silver-dim);
+    letter-spacing: 0.12em;
+    margin-bottom: 2.5rem;
+  }
+  .start-desc {
+    max-width: 420px;
+    font-size: 0.92rem;
+    line-height: 1.8;
+    color: var(--silver);
+    margin-bottom: 3rem;
+  }
+
+  .layer-preview {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    justify-content: center;
+  }
+  .layer-badge {
+    display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+    padding: 0.8rem 1.2rem;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  .layer-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .layer-badge span { font-size: 0.72rem; color: var(--silver-dim); }
+
+  .btn-primary {
+    padding: 1rem 3rem;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    border-radius: 40px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.35s;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--gold);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.35s ease;
+    z-index: -1;
+  }
+  .btn-primary:hover { color: var(--bg); }
+  .btn-primary:hover::before { transform: scaleX(1); }
+
+  /* ─── QUIZ SCREEN ─── */
+  #screen-quiz { gap: 1.5rem; justify-content: flex-start; padding-top: 3rem; }
+
+  .quiz-header {
+    width: 100%; max-width: 640px;
+    display: flex; flex-direction: column; gap: 0.8rem;
+  }
+
+  .section-tag {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 0.68rem; font-weight: 500; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--silver-dim);
+  }
+  .section-tag .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  .progress-wrap {
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .progress-bar-outer {
+    flex: 1; height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px; overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%; border-radius: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--teal));
+    transition: width 0.5s ease;
+  }
+  .progress-num {
+    font-size: 0.72rem; color: var(--silver-dim);
+    white-space: nowrap; min-width: 40px; text-align: right;
+  }
+
+  .question-card {
+    width: 100%; max-width: 640px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 2rem;
+    backdrop-filter: blur(8px);
+  }
+
+  .q-number {
+    font-size: 0.68rem; letter-spacing: 0.25em; color: var(--gold);
+    margin-bottom: 1rem; text-transform: uppercase;
+  }
+  .q-text {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--white);
+    margin-bottom: 1.8rem;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 0.75rem; }
+
+  .option-label {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.02);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .option-label:hover {
+    border-color: rgba(201,168,76,0.35);
+    background: rgba(201,168,76,0.05);
+  }
+  .option-label input[type="radio"] { display: none; }
+  .option-label.selected {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.1);
+  }
+  .option-radio {
+    width: 18px; height: 18px; flex-shrink: 0;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+    transition: all 0.2s;
+  }
+  .selected .option-radio {
+    border-color: var(--gold);
+    background: var(--gold);
+  }
+  .selected .option-radio::after {
+    content: ''; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--bg);
+  }
+  .option-text {
+    font-size: 0.9rem; line-height: 1.6; color: var(--silver);
+    transition: color 0.2s;
+  }
+  .selected .option-text { color: var(--white); }
+
+  .quiz-nav {
+    width: 100%; max-width: 640px;
+    display: flex; justify-content: flex-end; gap: 1rem;
+  }
+  .btn-nav {
+    padding: 0.75rem 2rem;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--silver);
+    font-size: 0.85rem; letter-spacing: 0.08em;
+    border-radius: 30px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-nav:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-nav.primary {
+    background: var(--gold); border-color: var(--gold);
+    color: var(--bg); font-weight: 500;
+  }
+  .btn-nav.primary:hover { opacity: 0.85; }
+  .btn-nav:disabled { opacity: 0.3; cursor: default; }
+
+  /* ─── LOADING SCREEN ─── */
+  #screen-loading {
+    gap: 2rem; text-align: center;
+  }
+  .loading-orb {
+    width: 140px; height: 140px; position: relative; margin: 0 auto;
+  }
+  .loading-ring {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    animation: orbSpin linear infinite;
+  }
+  .lr1 { border: 2px solid rgba(232,115,108,0.7); animation-duration: 3s; }
+  .lr2 { inset: 16px; border: 2px solid rgba(123,94,167,0.7); animation-duration: 4.5s; animation-direction: reverse; }
+  .lr3 { inset: 32px; border: 2px solid rgba(78,205,196,0.7); animation-duration: 6s; }
+  .lr-core {
+    position: absolute; inset: 48px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.6), transparent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .loading-text {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.3rem; font-weight: 300;
+    color: var(--white); margin-bottom: 0.5rem;
+  }
+  .loading-sub { font-size: 0.8rem; color: var(--silver-dim); letter-spacing: 0.15em; }
+
+  .loading-steps {
+    display: flex; flex-direction: column; gap: 0.5rem;
+    min-width: 260px;
+  }
+  .loading-step {
+    display: flex; align-items: center; gap: 0.75rem;
+    font-size: 0.8rem; color: var(--silver-dim);
+    opacity: 0; transform: translateY(6px);
+    transition: all 0.4s ease;
+  }
+  .loading-step.visible { opacity: 1; transform: translateY(0); }
+  .loading-step.done { color: var(--teal); }
+  .step-icon { width: 16px; text-align: center; }
+
+  /* ─── RESULT SCREEN ─── */
+  #screen-result {
+    gap: 2rem; justify-content: flex-start; padding-top: 3rem;
+    padding-bottom: 4rem;
+  }
+
+  .result-header {
+    text-align: center; max-width: 640px; width: 100%;
+  }
+  .result-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 300; line-height: 1.3;
+    color: var(--white); margin-bottom: 0.5rem;
+  }
+  .result-title em { color: var(--gold); font-style: normal; }
+  .result-subtitle { font-size: 0.82rem; color: var(--silver-dim); letter-spacing: 0.1em; }
+
+  .result-grid {
+    width: 100%; max-width: 900px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+
+  .result-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 18px;
+    padding: 1.5rem;
+    backdrop-filter: blur(8px);
+  }
+  .result-card.wide { grid-column: 1 / -1; }
+  .card-title {
+    font-size: 0.68rem; font-weight: 500; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--silver-dim);
+    margin-bottom: 1.2rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .card-title .dot { width: 5px; height: 5px; border-radius: 50%; }
+
+  /* gap analysis */
+  .gap-list { display: flex; flex-direction: column; gap: 0.8rem; }
+  .gap-item {
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.02);
+    border-left: 3px solid transparent;
+  }
+  .gap-item.high { border-left-color: var(--coral); }
+  .gap-item.mid { border-left-color: var(--gold); }
+  .gap-item.low { border-left-color: var(--teal); }
+  .gap-label { font-size: 0.72rem; color: var(--silver-dim); margin-bottom: 0.3rem; }
+  .gap-desc { font-size: 0.88rem; line-height: 1.8; color: var(--silver); }
+  .gap-desc em { color: var(--white); font-style: normal; font-weight: 600; }
+  .gap-desc p:last-child { margin-bottom: 0 !important; }
+
+  /* dominant source bars */
+  .source-bars { display: flex; flex-direction: column; gap: 0.6rem; }
+  .source-row {
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .source-name { font-size: 0.78rem; color: var(--silver); min-width: 60px; }
+  .source-bar-outer {
+    flex: 1; height: 6px; background: rgba(255,255,255,0.06);
+    border-radius: 3px; overflow: hidden;
+  }
+  .source-bar-inner {
+    height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--purple), var(--teal));
+    transition: width 1s ease;
+  }
+  .source-pct { font-size: 0.7rem; color: var(--silver-dim); min-width: 32px; text-align: right; }
+
+  /* layer summaries */
+  .layer-summaries { display: flex; flex-direction: column; gap: 0.75rem; }
+  .layer-summary {
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.025);
+    display: flex; gap: 1rem; align-items: flex-start;
+  }
+  .ls-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .ls-body {}
+  .ls-name { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.15em; margin-bottom: 0.25rem; }
+  .ls-text { font-size: 0.83rem; line-height: 1.6; color: var(--silver); }
+
+  /* share card */
+  #shareCard {
+    width: 100%; max-width: 640px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 18px;
+    padding: 1.5rem;
+  }
+  .share-buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.2rem; }
+  .btn-share {
+    padding: 0.65rem 1.4rem;
+    border-radius: 30px;
+    font-size: 0.8rem; letter-spacing: 0.05em;
+    cursor: pointer; transition: all 0.2s;
+    border: 1px solid;
+  }
+  .btn-share.download {
+    background: var(--gold); border-color: var(--gold);
+    color: var(--bg); font-weight: 500;
+  }
+  .btn-share.download:hover { opacity: 0.85; }
+  .btn-share.copy {
+    background: transparent; border-color: rgba(255,255,255,0.12); color: var(--silver);
+  }
+  .btn-share.copy:hover { border-color: var(--teal); color: var(--teal); }
+
+  /* retake */
+  .btn-retake {
+    padding: 0.75rem 2.5rem;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--silver); font-size: 0.85rem;
+    border-radius: 30px; cursor: pointer;
+    transition: all 0.2s; letter-spacing: 0.08em;
+  }
+  .btn-retake:hover { border-color: var(--silver); color: var(--white); }
+
+  /* share image overlay */
+  #shareImgWrap {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.85);
+    display: none; align-items: center; justify-content: center;
+    padding: 2rem;
+  }
+  #shareImgWrap.show { display: flex; }
+  .share-modal {
+    background: var(--bg2);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 20px;
+    padding: 1.5rem;
+    max-width: 440px; width: 100%;
+    text-align: center;
+  }
+  .share-modal img { width: 100%; border-radius: 12px; margin-bottom: 1rem; }
+  .share-modal-btns { display: flex; gap: 0.75rem; justify-content: center; }
+
+  /* hidden render card */
+  #renderCard {
+    position: fixed; left: -9999px; top: 0;
+    width: 540px; padding: 40px;
+    background: #0A0A14;
+    font-family: 'Inter', sans-serif;
+  }
+
+  @media (max-width: 640px) {
+    .result-grid { grid-template-columns: 1fr; }
+    .result-card.wide { grid-column: 1; }
+    .layer-preview { gap: 0.75rem; }
+  }
+</style>
+<script src="soul-compass-questions.js"></script>
+</head>
+<body>
+
+<!-- Cosmic canvas -->
+<div id="cosmos"><canvas id="cosmosCanvas"></canvas></div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 1: START
+═══════════════════════════════════════ -->
+<section class="screen active" id="screen-start">
+  <div class="logo-orb">
+    <div class="ring ring-1"></div>
+    <div class="ring ring-2"></div>
+    <div class="ring ring-3"></div>
+    <div class="ring-core"></div>
+  </div>
+  <p class="start-label">Self-Discovery · 자기성찰</p>
+  <h1 class="start-title"><span>영혼의</span> 나침반</h1>
+  <p class="start-sub">Soul Compass</p>
+
+   <p class="start-desc">
+    우리는 아니라고 생각하면서도<br>
+    8가지 대상을 의존하며 살아가고 있습니다.<br>
+    자신, 물질, 운명, 조상, 자연, 법칙, 원리, 절대자<br>
+    과연 당신은 영(Spirit), 혼(Soul), 육(Physical) 세 층위에서<br>
+    무엇에 의존하며 살아갈까요?<br>
+    20개의 질문이 당신의 내면 지형도를 그립니다.
+  </p>
+
+  <div class="layer-preview">
+    <div class="layer-badge">
+      <div class="layer-dot" style="background:var(--body-c)"></div>
+      <strong style="font-size:0.85rem">육</strong>
+      <span>Physical</span>
+    </div>
+    <div class="layer-badge">
+      <div class="layer-dot" style="background:var(--soul-c)"></div>
+      <strong style="font-size:0.85rem">혼</strong>
+      <span>Soul</span>
+    </div>
+    <div class="layer-badge">
+      <div class="layer-dot" style="background:var(--spirit-c)"></div>
+      <strong style="font-size:0.85rem">영</strong>
+      <span>Spirit</span>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="startQuiz()">나침반 시작하기</button>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 2: QUIZ
+═══════════════════════════════════════ -->
+<section class="screen" id="screen-quiz">
+  <div class="quiz-header">
+    <!-- section tag hidden -->
+    <div class="progress-wrap">
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="progressBar" style="width:5%"></div>
+      </div>
+      <span class="progress-num" id="progressNum">1 / 20</span>
+    </div>
+  </div>
+
+  <div class="question-card" id="questionCard">
+    <div class="q-number" id="qNumber">Q01</div>
+    <div class="q-text" id="qText"></div>
+    <div class="options" id="optionsWrap"></div>
+  </div>
+
+  <div class="quiz-nav">
+    <button class="btn-nav" id="btnPrev" onclick="navigate(-1)">이전</button>
+    <button class="btn-nav primary" id="btnNext" onclick="navigate(1)">다음</button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 3: LOADING
+═══════════════════════════════════════ -->
+<section class="screen" id="screen-loading">
+  <div class="loading-orb">
+    <div class="loading-ring lr1"></div>
+    <div class="loading-ring lr2"></div>
+    <div class="loading-ring lr3"></div>
+    <div class="lr-core"></div>
+  </div>
+  <div>
+    <div class="loading-text">영혼의 지형을 분석 중…</div>
+    <div class="loading-sub">Mapping your inner cosmos</div>
+  </div>
+  <div class="loading-steps" id="loadingSteps">
+    <div class="loading-step" id="lstep0"><span class="step-icon">◈</span> 육(Physical) 층위 분석</div>
+    <div class="loading-step" id="lstep1"><span class="step-icon">◈</span> 혼(Soul) 층위 분석</div>
+    <div class="loading-step" id="lstep2"><span class="step-icon">◈</span> 영(Spirit) 층위 분석</div>
+    <div class="loading-step" id="lstep3"><span class="step-icon">◈</span> 층위간 간극(Gap) 계산</div>
+    <div class="loading-step" id="lstep4"><span class="step-icon">◈</span> 의존 대상 패턴 도출</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 4: RESULT
+═══════════════════════════════════════ -->
+<section class="screen" id="screen-result">
+  <div class="result-header">
+    <div class="result-title" id="resultTitle">당신의 나침반은 <em id="dominantName"></em>을 가리킵니다</div>
+    <div class="result-subtitle" id="resultSub">Soul Compass Analysis Result</div>
+  </div>
+
+  <div class="result-grid">
+
+    <!-- Concentric Ring Chart -->
+    <div class="result-card" style="grid-column:1/-1">
+      <div class="card-title"><div class="dot" style="background:var(--gold)"></div>영혼의 나침반 — 층위별 의존 지형도</div>
+      <div style="display:flex;gap:2.5rem;align-items:center;flex-wrap:wrap;justify-content:center">
+        <div style="position:relative;flex-shrink:0">
+          <canvas id="soulCanvas" width="420" height="420" style="max-width:min(420px,100%);display:block"></canvas>
+        </div>
+        <div id="chartLegend" style="display:flex;flex-direction:column;gap:0.55rem;min-width:160px"></div>
+      </div>
+
+    </div>
+
+    <!-- Layer summaries -->
+    <div class="result-card">
+      <div class="card-title"><div class="dot" style="background:var(--spirit-c)"></div>층위별 핵심 성향</div>
+      <div class="layer-summaries" id="layerSummaries"></div>
+    </div>
+
+    <!-- Gap analysis -->
+    <div class="result-card wide">
+      <div class="card-title"><div class="dot" style="background:var(--coral)"></div>신념과 현실의 간극 분석</div>
+      <div class="gap-list" id="gapList"></div>
+    </div>
+
+    <!-- Dominant sources bar (hidden - moved to layer summaries) -->
+    <div id="sourceBars" style="display:none"></div>
+
+    <!-- archetype removed -->
+
+  </div>
+
+  <!-- Share Section -->
+  <div id="shareCard" style="max-width:640px;width:100%">
+    <div class="card-title"><div class="dot" style="background:var(--gold)"></div>결과 공유</div>
+    <p style="font-size:0.85rem;color:var(--silver);line-height:1.6" id="shareText"></p>
+    <div class="share-buttons">
+      <button class="btn-share download" onclick="downloadCard()">🌌 이미지로 저장</button>
+      <button class="btn-share copy" onclick="copyText()">🔗 텍스트 복사</button>
+    </div>
+  </div>
+
+  <button class="btn-retake" onclick="retake()">↩ 다시 측정하기</button>
+</section>
+
+<!-- Hidden render card for share image -->
+<div id="renderCard">
+  <div style="color:#E8E9F0">
+    <div style="font-size:0.6rem;letter-spacing:0.3em;color:#C9A84C;margin-bottom:1.2rem;text-align:center">SOUL COMPASS · 영혼의 나침반</div>
+    <div id="rcLayers" style="display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.4rem"></div>
+    <div id="rcGap" style="font-size:0.72rem;line-height:1.7;color:rgba(184,188,200,0.8);border-top:1px solid rgba(255,255,255,0.07);padding-top:1rem"></div>
+    <div style="font-size:0.6rem;color:rgba(184,188,200,0.35);text-align:center;margin-top:1.2rem">soul-compass.app</div>
+  </div>
+</div>
+
+<!-- Share image modal -->
+<div id="shareImgWrap">
+  <div class="share-modal">
+    <div class="card-title" style="justify-content:center;margin-bottom:1rem">결과 카드 미리보기</div>
+    <img id="sharePreviewImg" src="" alt="결과 카드">
+    <div class="share-modal-btns">
+      <a id="downloadLink" download="soul-compass-result.png">
+        <button class="btn-share download">저장하기</button>
+      </a>
+      <button class="btn-share copy" onclick="closeShareModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════
+   COSMOS BACKGROUND
+═══════════════════════════════ */
+(function(){
+  const canvas = document.getElementById('cosmosCanvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [], W, H;
+
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for(let i=0;i<200;i++){
+    stars.push({
+      x: Math.random(), y: Math.random(),
+      r: Math.random()*1.2+0.2,
+      a: Math.random(),
+      da: (Math.random()-0.5)*0.003,
+      drift: (Math.random()-0.5)*0.00005
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s=>{
+      s.a += s.da;
+      if(s.a<0||s.a>1) s.da*=-1;
+      s.x += s.drift;
+      if(s.x<0) s.x=1; if(s.x>1) s.x=0;
+      ctx.beginPath();
+      ctx.arc(s.x*W, s.y*H, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(184,188,200,${s.a*0.4})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ═══════════════════════════════
+   DATA: QUESTIONS
+═══════════════════════════════ */
+
+// ─────────────────────────────────────────────────────────
+  // 질문 데이터는 soul-compass-questions.js 에서 로드됩니다.
+  // TARGETS, TARGET_EN, LAYERS, QUESTIONS 가 여기에 주입됩니다.
+  // ─────────────────────────────────────────────────────────
+
+/* ═══════════════════════════════
+   STATE
+═══════════════════════════════ */
+let currentQ = 0;
+let answers = {}; // index of chosen option
+
+/* ═══════════════════════════════
+   SCREEN NAVIGATION
+═══════════════════════════════ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* ═══════════════════════════════
+   QUIZ LOGIC
+═══════════════════════════════ */
+// Shuffled order (set once per quiz attempt)
+let questionOrder = [];
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz(){
+  currentQ = 0;
+  answers = {};
+  // 층위별 균등 20개 선택: body 7, soul 7, spirit 6 (→ 합계 20)
+  const PICK = { body: 7, soul: 7, spirit: 6 };
+  const byLayer = { body: [], soul: [], spirit: [] };
+  QUESTIONS.forEach((q, i) => byLayer[q.layer].push(i));
+  let picked = [];
+  Object.entries(PICK).forEach(([layer, n]) => {
+    picked = picked.concat(shuffleArray(byLayer[layer]).slice(0, n));
+  });
+  questionOrder = shuffleArray(picked); // 최종 전체 순서 섞기
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const origIdx = questionOrder[currentQ];
+  const q = QUESTIONS[origIdx];
+
+  // progress
+  const pct = ((currentQ) / questionOrder.length) * 100;
+  document.getElementById('progressBar').style.width = Math.max(pct,3) + '%';
+  document.getElementById('progressNum').textContent = (currentQ+1) + ' / ' + questionOrder.length;
+
+  // question
+  document.getElementById('qNumber').textContent = 'Q' + String(currentQ+1).padStart(2,'0');
+  document.getElementById('qText').textContent = q.text;
+
+  // options
+  const wrap = document.getElementById('optionsWrap');
+  wrap.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const lbl = document.createElement('label');
+    lbl.className = 'option-label' + (answers[origIdx] === i ? ' selected' : '');
+    lbl.innerHTML = `
+      <input type="radio" name="opt" value="${i}" ${answers[origIdx]===i?'checked':''}>
+      <div class="option-radio"></div>
+      <div class="option-text">${opt.text}</div>
+    `;
+    lbl.addEventListener('click', () => selectOption(i));
+    wrap.appendChild(lbl);
+  });
+
+  // nav buttons
+  document.getElementById('btnPrev').disabled = currentQ === 0;
+  const btnNext = document.getElementById('btnNext');
+  if(currentQ === questionOrder.length - 1){
+    btnNext.textContent = '결과 분석';
+  } else {
+    btnNext.textContent = '다음';
+  }
+}
+
+function selectOption(i){
+  const origIdx = questionOrder[currentQ];
+  answers[origIdx] = i;
+  document.querySelectorAll('.option-label').forEach((lbl,idx) => {
+    lbl.classList.toggle('selected', idx === i);
+    const radio = lbl.querySelector('.option-radio');
+    radio.innerHTML = '';
+  });
+}
+
+function navigate(dir){
+  if(dir === 1){
+    if(answers[questionOrder[currentQ]] === undefined) {
+      // shake the card
+      const card = document.getElementById('questionCard');
+      card.style.animation = 'none';
+      card.style.borderColor = 'rgba(232,115,108,0.5)';
+      setTimeout(()=>{ card.style.borderColor=''; }, 800);
+      return;
+    }
+    if(currentQ === questionOrder.length - 1){
+      startLoading();
+      return;
+    }
+    currentQ++;
+  } else {
+    if(currentQ === 0) return;
+    currentQ--;
+  }
+  renderQuestion();
+}
+
+/* ═══════════════════════════════
+   LOADING
+═══════════════════════════════ */
+function startLoading(){
+  showScreen('screen-loading');
+  // reset steps
+  for(let i=0;i<5;i++){
+    const el = document.getElementById('lstep'+i);
+    el.classList.remove('visible','done');
+    el.querySelector('.step-icon').textContent = '◈';
+  }
+  let step = 0;
+  const delays = [400, 900, 1400, 1900, 2500];
+  delays.forEach((d, i) => {
+    setTimeout(() => {
+      document.getElementById('lstep'+i).classList.add('visible');
+      if(i > 0) {
+        const prev = document.getElementById('lstep'+(i-1));
+        prev.classList.add('done');
+        prev.querySelector('.step-icon').textContent = '✓';
+      }
+    }, d);
+  });
+  setTimeout(() => {
+    const last = document.getElementById('lstep4');
+    last.classList.add('done');
+    last.querySelector('.step-icon').textContent = '✓';
+    computeAndShowResults();
+  }, 3200);
+}
+
+/* ═══════════════════════════════
+   SCORE COMPUTATION
+═══════════════════════════════ */
+function computeScores(){
+  // layerScores[layer][target] = count
+  const layerScores = {};
+  LAYERS.forEach(l => {
+    layerScores[l.id] = {};
+    TARGETS.forEach(t => layerScores[l.id][t] = 0);
+  });
+
+  QUESTIONS.forEach((q, qi) => {
+    const ans = answers[qi];
+    if(ans !== undefined && ans !== null){
+      const target = q.options[ans].target;
+      layerScores[q.layer][target]++;
+    }
+  });
+
+  return layerScores;
+}
+
+function computeAndShowResults(){
+  const layerScores = computeScores();
+
+  // Radar data: for each target, sum across all layers
+  const totalByTarget = {};
+  TARGETS.forEach(t => totalByTarget[t] = 0);
+  LAYERS.forEach(l => {
+    TARGETS.forEach(t => totalByTarget[t] += layerScores[l.id][t]);
+  });
+
+  // Find dominant
+  let dominant = TARGETS[0], maxVal = 0;
+  TARGETS.forEach(t => { if(totalByTarget[t] > maxVal){ maxVal=totalByTarget[t]; dominant=t; } });
+
+  // Gap: compare body vs soul vs spirit dominant targets
+  const layerDominant = {};
+  LAYERS.forEach(l => {
+    let dTarget = TARGETS[0], dVal = 0;
+    TARGETS.forEach(t => { if(layerScores[l.id][t] > dVal){ dVal = layerScores[l.id][t]; dTarget = t; } });
+    layerDominant[l.id] = { target: dTarget, val: dVal };
+  });
+
+  showResults({ layerScores, totalByTarget, dominant, layerDominant });
+}
+
+/* ═══════════════════════════════
+   RESULT RENDERING
+═══════════════════════════════ */
+
+const ARCHETYPES = {
+  '자기': { icon:'🔥', name:'자기 확신자', desc:'내면의 의지와 주도성이 삶의 중심. 스스로 길을 개척하는 영혼.' },
+  '물질': { icon:'💎', name:'현실 구현자', desc:'구체적이고 실질적인 것에서 안정을 찾는 현명한 현실주의자.' },
+  '운명': { icon:'🌀', name:'흐름의 수용자', desc:'삶의 흐름을 신뢰하며 저항보다 수용에서 지혜를 찾는 영혼.' },
+  '조상': { icon:'🌳', name:'뿌리의 수호자', desc:'혈통과 전통에서 정체성과 의미를 길어 올리는 연결된 영혼.' },
+  '자연': { icon:'🌊', name:'자연과의 공명자', desc:'자연의 리듬과 조화롭게 살며 생명력에서 치유를 얻는 영혼.' },
+  '법칙': { icon:'⚖️', name:'진리의 탐구자', desc:'논리와 원칙 위에 삶을 세우는 체계적이고 명료한 영혼.' },
+  '원리': { icon:'🔮', name:'우주의 관찰자', desc:'보이지 않는 원리와 패턴 속에서 존재의 의미를 발견하는 영혼.' },
+  '절대자': { icon:'✨', name:'영적 순례자', desc:'초월적 존재와의 관계에서 궁극의 안식과 의미를 찾는 영혼.' },
+};
+
+const SOURCE_MEANINGS = {
+  '자기':'자기 자신의 의지와 주체성',
+  '물질':'물질·경제·환경적 안정',
+  '운명':'운명과 인과의 흐름',
+  '조상':'조상·혈통·전통',
+  '자연':'자연의 섭리와 생명력',
+  '법칙':'과학적·사회적 법칙',
+  '원리':'우주적 원리와 패턴',
+  '절대자':'신·절대자·초월적 존재',
+};
+
+function gapText(body, soul, spirit){
+  const bt  = body.target;    // 육 - 평상시 의지
+  const st  = soul.target;    // 혼 - 어려울 때 의지
+  const spt = spirit.target;  // 영 - 깊은 내면의 신념
+
+  const allSame   = bt === st && st === spt;
+  const allDiff   = bt !== st && st !== spt && bt !== spt;
+  // 두 개만 같은 경우들
+  const bodyEqSoul   = bt === st && st !== spt;  // 육=혼, 영 다름
+  const soulEqSpirit = st === spt && bt !== st;  // 혼=영, 육 다름
+  const bodyEqSpirit = bt === spt && bt !== st;  // 육=영, 혼 다름
+
+  // ── 케이스 1: 세 층위 모두 동일 ──
+  if(allSame){
+    return {
+      level: 'low',
+      main:  `깊은 내면에도, 평상시에도, 그리고 어떤 상황에서도 당신은 한결같이 <em>${spt}</em>에 의지하고 있어요.`,
+      growth:`세 층위가 완전히 정렬된 통합된 상태입니다. 당신의 신념과 일상, 내면이 하나의 방향을 가리키고 있어요. 이 일관성이 삶의 가장 큰 힘이 됩니다.`
+    };
+  }
+
+  // ── 케이스 2: 세 층위 모두 다름 ──
+  if(allDiff){
+    return {
+      level: 'high',
+      main:  `깊은 내면에는 <em>${spt}</em>이 담겨 있지만, 평상시에는 <em>${bt}</em>을 의지하며 살아가고 있는 것 같아요. 하지만 현실에 갑작스런 사건이나 어떠한 것에 의지해야 할 상황이 생길 때에는 <em>${st}</em>을 의지하는 경향이 있는 것 같습니다.`,
+      growth:`자신은 <em>${spt}</em>을 원하고 추구하며 살고 있다고 생각할 수도 있습니다. 하지만 평상시에는 <em>${bt}</em>을 의지하며 살아가는 것 같아요. 그리고 어려운 상황이나 문제가 생길 때에는 <em>${st}</em>을 의지하기도 하는 것 같습니다.
+
+살아가면서 무엇을 의지해도 상관은 없지만, 각 층위를 같은 영역으로 맞춰 간다면 더욱 큰 힘을 얻어 살아갈 수 있을 것입니다.`
+    };
+  }
+
+  // ── 케이스 3: 육=혼, 영만 다름 ──
+  if(bodyEqSoul){
+    return {
+      level: 'mid',
+      main:  `깊은 내면에는 <em>${spt}</em>이 담겨 있지만, 평상시에도, 어려운 상황에서도 <em>${bt}</em>을 의지하며 살아가고 있는 것 같아요.`,
+      growth:`일상과 감정의 층위는 <em>${bt}</em>으로 잘 정렬되어 있어요. 이제 깊은 내면이 원하는 <em>${spt}</em>을 조금씩 일상 속에서 실천해 나간다면, 세 층위가 하나로 모이는 순간을 경험하게 될 것입니다.`
+    };
+  }
+
+  // ── 케이스 4: 혼=영, 육만 다름 ──
+  if(soulEqSpirit){
+    return {
+      level: 'mid',
+      main:  `깊은 내면에도, 어려운 상황에서도 <em>${spt}</em>을 의지하는 것 같아요. 그런데 평상시에는 <em>${bt}</em>을 의지하며 살아가고 있는 것 같습니다.`,
+      growth:`내면의 신념과 어려울 때 의지하는 것이 <em>${spt}</em>으로 잘 맞아 있어요. 이제 평상시의 일상 습관도 <em>${spt}</em>의 방향으로 조금씩 맞춰 간다면, 더욱 온전한 통합을 이룰 수 있을 것입니다.`
+    };
+  }
+
+  // ── 케이스 5: 육=영, 혼만 다름 ──
+  return {
+    level: 'mid',
+    main:  `깊은 내면과 평상시 모두 <em>${spt}</em>을 의지하며 살아가고 있는 것 같아요. 다만 어려운 상황이 생길 때에는 <em>${st}</em>에 의지하는 경향이 있는 것 같습니다.`,
+    growth:`신념과 일상이 <em>${spt}</em>으로 잘 정렬되어 있어요. 어려운 순간에 찾게 되는 <em>${st}</em>도 당신의 일부입니다. 그 순간들을 통해 스스로를 더 깊이 이해하게 될 거예요. 세 층위가 모두 <em>${spt}</em>으로 모여갈 때 가장 큰 내면의 힘이 생깁니다.`
+  };
+}
+
+function showResults({ layerScores, totalByTarget, dominant, layerDominant }){
+  showScreen('screen-result');
+
+  // 헤더
+  document.getElementById('dominantName').textContent = dominant;
+  document.getElementById('resultSub').textContent    = '영혼의 나침반 분석 결과';
+
+  // ── 차트 ──
+  drawSoulChart(layerScores);
+
+  // ── 층위별 1·2순위 계산 ──
+  function getTopTwo(layerId) {
+    const scores = layerScores[layerId];
+    const layerTotal = TARGETS.reduce((s, t) => s + (scores[t]||0), 0) || 1;
+    return TARGETS
+      .map(t => ({ t, pct: Math.round((scores[t]||0) / layerTotal * 100) }))
+      .filter(x => x.pct > 0)
+      .sort((a, b) => b.pct - a.pct)
+      .slice(0, 2);
+  }
+  const topBody   = getTopTwo('body');
+  const topSoul   = getTopTwo('soul');
+  const topSpirit = getTopTwo('spirit');
+
+  // ── 층위별 핵심 성향 ──
+  const summaryWrap = document.getElementById('layerSummaries');
+  summaryWrap.innerHTML = '';
+  LAYERS.forEach(l => {
+    const tops = l.id==='body' ? topBody : l.id==='soul' ? topSoul : topSpirit;
+    const div = document.createElement('div');
+    div.className = 'layer-summary';
+    const ranksHtml = tops.map((x, i) =>
+      `<span style="margin-right:0.8rem">
+        <span style="color:var(--silver-dim);font-size:0.78em">${i===0?'1순위':'2순위'}</span>
+        <strong style="color:var(--white);margin:0 2px">${x.t}</strong>
+        <span style="color:${l.color};font-weight:600">${x.pct}%</span>
+      </span>`
+    ).join('');
+    div.innerHTML = `
+      <div class="ls-icon">${l.emoji}</div>
+      <div class="ls-body">
+        <div class="ls-name" style="color:${l.color}">${l.name}</div>
+        <div class="ls-text">${ranksHtml}</div>
+      </div>
+    `;
+    summaryWrap.appendChild(div);
+  });
+
+  // ── 간극 분석 ──
+  const gap = gapText(layerDominant.body, layerDominant.soul, layerDominant.spirit);
+  const gapList = document.getElementById('gapList');
+  const growthParagraphs = gap.growth.split('\n\n').map(p =>
+    `<p style="margin:0 0 0.6rem">${p}</p>`
+  ).join('');
+  gapList.innerHTML = `
+    <div class="gap-item ${gap.level}">
+      <div class="gap-label">현재 나의 의존 지형</div>
+      <div class="gap-desc">${gap.main}</div>
+    </div>
+    <div class="gap-item mid" style="border-left-color:var(--purple)">
+      <div class="gap-label">영적 성장 방향</div>
+      <div class="gap-desc">${growthParagraphs}</div>
+    </div>
+  `;
+
+  // ── 공유 텍스트 구성 ──
+  function fmtTop(arr){ return arr.map((x,i)=>`${i+1}순위 ${x.t} ${x.pct}%`).join(', '); }
+  const layerSummaryText = `육(${fmtTop(topBody)}), 혼(${fmtTop(topSoul)}), 영(${fmtTop(topSpirit)})`;
+
+  const gapMainPlain   = gap.main.replace(/<em>/g,'').replace(/<\/em>/g,'');
+  const gapGrowthPlain = gap.growth.replace(/<em>/g,'').replace(/<\/em>/g,'').replace(/\n\n/g,'\n');
+
+  const shareText =
+`[영혼의 나침반 결과]
+
+${layerSummaryText}
+
+[신념과 현실의 간극]
+${gapMainPlain}
+
+[영적 성장 방향]
+${gapGrowthPlain}`;
+
+  document.getElementById('shareText').innerHTML =
+    `<span style="color:var(--silver-dim);font-size:0.8rem">${layerSummaryText}</span>`;
+
+  window._shareText  = shareText;
+  window._gap        = gap;
+  window._resultData = { layerDominant, layerScores, dominant, gap, topBody, topSoul, topSpirit };
+
+  // ── 자동 저장 (navigate 에서도 호출하지만 여기서 확실히) ──
+  autoSaveResult();
+  updateDataCounter();
+}
+
+
+/* ═══════════════════════════════
+   SHARE
+═══════════════════════════════ */
+async function downloadCard(){
+  const d = window._resultData;
+  const rc = document.getElementById('renderCard');
+
+  // ── 층위별 1·2순위 블록 ──
+  const layersEl = document.getElementById('rcLayers');
+  layersEl.innerHTML = '';
+  const topMap = { body: d.topBody, soul: d.topSoul, spirit: d.topSpirit };
+  LAYERS.forEach(l => {
+    const tops = topMap[l.id] || [];
+    const rankHtml = tops.map((x, i) =>
+      `<span style="margin-right:0.6rem;font-size:0.7rem;color:rgba(232,233,240,0.7)">${i===0?'1순위':'2순위'} <strong style="color:#E8E9F0">${x.t}</strong> <span style="color:${l.color};font-weight:700">${x.pct}%</span></span>`
+    ).join('');
+    layersEl.innerHTML += `
+      <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:0.9rem 1.1rem;display:flex;align-items:center;gap:1rem">
+        <div style="font-size:1.3rem;flex-shrink:0">${l.emoji}</div>
+        <div>
+          <div style="font-size:0.62rem;color:${l.color};letter-spacing:0.18em;margin-bottom:0.3rem">${l.name}</div>
+          <div>${rankHtml}</div>
+        </div>
+      </div>`;
+  });
+
+  // ── 간극 분석 텍스트 (plain) ──
+  const gapEl = document.getElementById('rcGap');
+  const gapMainPlain  = d.gap.main.replace(/<em>/g,'').replace(/<\/em>/g,'');
+  const gapGrowthPlain = d.gap.growth.replace(/<em>/g,'').replace(/<\/em>/g,'').replace(/\n\n/g,' ');
+  gapEl.innerHTML = `
+    <div style="font-size:0.68rem;color:rgba(201,168,76,0.7);letter-spacing:0.15em;margin-bottom:0.4rem">현재 나의 의존 지형</div>
+    <div style="margin-bottom:0.8rem">${gapMainPlain}</div>
+    <div style="font-size:0.68rem;color:rgba(201,168,76,0.7);letter-spacing:0.15em;margin-bottom:0.4rem">영적 성장 방향</div>
+    <div>${gapGrowthPlain}</div>
+  `;
+
+  rc.style.display = 'block';
+  try {
+    const canvas = await html2canvas(rc, { backgroundColor:'#0A0A14', scale:2 });
+    const imgUrl = canvas.toDataURL('image/png');
+    document.getElementById('sharePreviewImg').src = imgUrl;
+    document.getElementById('downloadLink').href = imgUrl;
+    document.getElementById('shareImgWrap').classList.add('show');
+  } catch(e) {
+    alert('이미지 생성에 실패했습니다.');
+  }
+  rc.style.display = 'none';
+}
+
+function closeShareModal(){
+  document.getElementById('shareImgWrap').classList.remove('show');
+}
+
+async function copyText(){
+  const btn = event.currentTarget;
+  const text = window._shareText || '';
+  // 1) Modern Clipboard API
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      btn.textContent = '✓ 복사됨!';
+      setTimeout(() => btn.textContent = '🔗 텍스트 복사', 2000);
+      return;
+    } catch(e) { /* fallback */ }
+  }
+  // 2) execCommand fallback (older browsers / file:// / http)
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '✓ 복사됨!';
+    setTimeout(() => btn.textContent = '🔗 텍스트 복사', 2000);
+  } catch(e2) {
+    // 3) Last resort: show text in prompt
+    window.prompt('아래 텍스트를 직접 복사하세요 (Ctrl+A → Ctrl+C):', text);
+  }
+}
+
+function retake(){
+  startQuiz();
+}
+
+
+/* ═══════════════════════════════════════
+   자동 저장 — Python 로컬 서버로 POST
+   서버가 soul-compass-data.csv 에 누적 저장
+═══════════════════════════════════════ */
+
+async function autoSaveResult() {
+  const d = window._resultData;
+  if (!d) return;
+
+  function top2(arr) {
+    const r1 = arr[0] || { t:'', pct:0 };
+    const r2 = arr[1] || { t:'', pct:0 };
+    return { first: r1.t, firstPct: r1.pct, second: r2.t, secondPct: r2.pct };
+  }
+
+  const payload = {
+    body:   top2(d.topBody),
+    soul:   top2(d.topSoul),
+    spirit: top2(d.topSpirit),
+  };
+
+  try {
+    const res = await fetch('http://localhost:8080/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      console.log('[Soul Compass] 서버 저장 완료');
+    } else {
+      console.warn('[Soul Compass] 서버 응답 오류:', res.status);
+    }
+  } catch(e) {
+    console.warn('[Soul Compass] 서버 연결 실패 (server.py 실행 중인지 확인):', e.message);
+  }
+}
+
+function updateDataCounter() { /* 서버 방식에서는 미사용 */ }
+
+/* ═══════════════════════════════════════════════════════
+   SOUL COMPASS CHART  v3
+   동심원 3링: 외=육  중=혼  내=영
+   각 링은 피자 조각이 아니라 선택 비율에 따라 여러 색이 겹쳐 물드는 방식
+═══════════════════════════════════════════════════════ */
+
+// ── 세련된 팔레트 (운명↔법칙 완전 구분) ──
+const PAL = {
+  '자기':   { hex:'#F0845C', r:240, g:132, b:92  },  // 따뜻한 주황
+  '물질':   { hex:'#D4AF37', r:212, g:175, b:55  },  // 골드
+  '운명':   { hex:'#C084FC', r:192, g:132, b:252 },  // 밝은 보라 (라벤더)
+  '조상':   { hex:'#94A3B8', r:148, g:163, b:184 },  // 쿨 슬레이트
+  '자연':   { hex:'#4ADE80', r:74,  g:222, b:128 },  // 에메랄드 그린
+  '법칙':   { hex:'#38BDF8', r:56,  g:189, b:248 },  // 스카이 블루 (운명과 완전 구분)
+  '원리':   { hex:'#E879F9', r:232, g:121, b:249 },  // 마젠타 핑크
+  '절대자': { hex:'#FDE68A', r:253, g:230, b:138 },  // 크림 옐로
+};
+
+function drawSoulChart(layerScores) {
+  const canvas = document.getElementById('soulCanvas');
+  if (!canvas) return;
+
+  const DPR  = Math.min(window.devicePixelRatio || 1, 2);
+  const SIZE = 420;
+  canvas.width  = SIZE * DPR;
+  canvas.height = SIZE * DPR;
+  canvas.style.width  = SIZE + 'px';
+  canvas.style.height = SIZE + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(DPR, DPR);
+
+  const cx = SIZE / 2, cy = SIZE / 2;
+  const TAU = Math.PI * 2;
+
+  // ── 링 기하 ──
+  const R_OUT  = 168;   // 외링(육) 바깥 반지름
+  const R_CORE = 28;    // 황금 코어 반지름
+  const GAP    = 6;
+  const BAND   = (R_OUT - R_CORE - GAP * 2) / 3;
+
+  const RINGS = [
+    { id:'body',   rO: R_OUT,              rI: R_OUT - BAND,               col:'#E8736C', label:'육' },
+    { id:'soul',   rO: R_OUT - BAND - GAP, rI: R_OUT - BAND*2 - GAP,       col:'#9D7ECF', label:'혼' },
+    { id:'spirit', rO: R_OUT - BAND*2 - GAP*2, rI: R_CORE,                 col:'#3ECFB8', label:'영' },
+  ];
+
+  // ── 배경 클리어 ──
+  ctx.clearRect(0, 0, SIZE, SIZE);
+
+  // ── 1. 배경 원 (미묘한 깊이감) ──
+  const bgGrd = ctx.createRadialGradient(cx, cy, 0, cx, cy, R_OUT + 30);
+  bgGrd.addColorStop(0,   'rgba(15,12,28,0.0)');
+  bgGrd.addColorStop(0.6, 'rgba(10,8,20,0.0)');
+  bgGrd.addColorStop(1,   'rgba(5,4,12,0.0)');
+  ctx.fillStyle = bgGrd;
+  ctx.fillRect(0, 0, SIZE, SIZE);
+
+  // ── 2. 링 트랙 배경 ──
+  RINGS.forEach(ring => {
+    ctx.beginPath();
+    ctx.arc(cx, cy, ring.rO, 0, TAU);
+    ctx.arc(cx, cy, ring.rI, 0, TAU, true);
+    ctx.fillStyle = ring.col + '08';
+    ctx.fill();
+
+    [ring.rO, ring.rI].forEach(r => {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, TAU);
+      ctx.strokeStyle = 'rgba(255,255,255,0.075)';
+      ctx.lineWidth = 0.7;
+      ctx.stroke();
+    });
+  });
+
+  // ── 3. 영향 레이어: 낮은 비율부터 깔고, 가장 높은 비율을 최상단에 둔다 ──
+  RINGS.forEach(ring => {
+    const scores = layerScores[ring.id];
+    const total  = TARGETS.reduce((s, t) => s + (scores[t]||0), 0) || 1;
+    const ranked = TARGETS
+      .map(target => ({
+        target,
+        score: scores[target] || 0,
+        ratio: (scores[target] || 0) / total
+      }))
+      .filter(item => item.score > 0)
+      .sort((a, b) => a.ratio - b.ratio);
+
+    ranked.forEach((item, layerIndex) => {
+      const p = PAL[item.target];
+      const dominance = Math.pow(item.ratio, 0.78);
+      const alpha = Math.min(0.1 + dominance * 0.92, 0.94);
+      const inset = Math.min(layerIndex * 0.9, 5);
+      const rO = ring.rO - inset;
+      const rI = ring.rI + inset * 0.42;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, rO, 0, TAU);
+      ctx.arc(cx, cy, rI, 0, TAU, true);
+      ctx.closePath();
+      const grd = ctx.createRadialGradient(cx, cy, rI, cx, cy, rO);
+      grd.addColorStop(0, `rgba(${p.r},${p.g},${p.b},${(alpha * 0.25).toFixed(2)})`);
+      grd.addColorStop(0.55, `rgba(${p.r},${p.g},${p.b},${(alpha * 0.62).toFixed(2)})`);
+      grd.addColorStop(1, `rgba(${p.r},${p.g},${p.b},${alpha.toFixed(2)})`);
+      ctx.fillStyle = grd;
+      ctx.fill();
+    });
+
+    const top = ranked[ranked.length - 1];
+    if (top) {
+      const p = PAL[top.target];
+      const topAlpha = Math.min(0.28 + top.ratio * 0.78, 0.78);
+
+      // 지배 색이 링 표면에 은은하게 번지는 하이라이트
+      ctx.beginPath();
+      ctx.arc(cx, cy, ring.rO - 1.3, 0, TAU);
+      ctx.strokeStyle = `rgba(${p.r},${p.g},${p.b},${topAlpha.toFixed(2)})`;
+      ctx.lineWidth = 2.2;
+      ctx.stroke();
+
+      ctx.save();
+      ctx.shadowColor = `rgba(${p.r},${p.g},${p.b},${Math.min(top.ratio * 0.95, 0.8).toFixed(2)})`;
+      ctx.shadowBlur = 16 + top.ratio * 22;
+      ctx.beginPath();
+      ctx.arc(cx, cy, (ring.rO + ring.rI) / 2, 0, TAU);
+      ctx.strokeStyle = `rgba(${p.r},${p.g},${p.b},${Math.min(top.ratio * 0.38, 0.36).toFixed(2)})`;
+      ctx.lineWidth = ring.rO - ring.rI - 2;
+      ctx.stroke();
+      ctx.restore();
+    }
+  });
+
+  // ── 4. 링 레이블 (육/혼/영) ──
+  RINGS.forEach(ring => {
+    const rMid  = (ring.rO + ring.rI) / 2;
+    const angle = -Math.PI / 2;
+    const lx = cx + rMid * Math.cos(angle);
+    const ly = cy + rMid * Math.sin(angle) + 1;
+
+    ctx.save();
+    ctx.font = `600 13px 'Noto Serif KR', serif`;
+    ctx.fillStyle = 'rgba(232,233,240,0.58)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(ring.label, lx, ly);
+    ctx.restore();
+  });
+
+  // ── 5. 중심 코어 글로우 ──
+  // 다층 글로우
+  [[R_CORE * 2.2, 0.08], [R_CORE * 1.4, 0.18], [R_CORE, 0.45]].forEach(([r, a]) => {
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+    g.addColorStop(0,   `rgba(201,168,76,${a})`);
+    g.addColorStop(0.6, `rgba(201,168,76,${(a*0.4).toFixed(2)})`);
+    g.addColorStop(1,   'rgba(201,168,76,0)');
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, TAU);
+    ctx.fillStyle = g;
+    ctx.fill();
+  });
+  // 중심 점
+  ctx.beginPath();
+  ctx.arc(cx, cy, 3.5, 0, TAU);
+  ctx.fillStyle = 'rgba(220,190,90,0.95)';
+  ctx.fill();
+
+  // ── 6. 범례 빌드 ──
+  buildChartLegend(layerScores);
+}
+
+function buildChartLegend(layerScores) {
+  const legendEl = document.getElementById('chartLegend');
+  if (!legendEl) return;
+  legendEl.innerHTML = '';
+
+  LAYERS.forEach(layer => {
+    const scores = layerScores[layer.id];
+    const total = TARGETS.reduce((s, t) => s + (scores[t] || 0), 0) || 1;
+    const top = TARGETS
+      .map(target => ({ target, value: scores[target] || 0, pct: Math.round(((scores[target] || 0) / total) * 100) }))
+      .filter(item => item.value > 0)
+      .sort((a, b) => b.pct - a.pct)
+      .slice(0, 3);
+
+    const block = document.createElement('div');
+    block.style.cssText = 'padding:0.72rem 0.82rem;border:1px solid rgba(255,255,255,0.07);border-radius:12px;background:rgba(255,255,255,0.025);min-width:210px';
+    block.innerHTML = `
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.55rem">
+        <div style="width:7px;height:7px;border-radius:50%;background:${layer.color};box-shadow:0 0 8px ${layer.color}99"></div>
+        <div style="font-size:0.68rem;letter-spacing:0.16em;color:${layer.color};font-weight:600">${layer.name}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0.38rem">
+        ${top.map(item => {
+          const p = PAL[item.target];
+          return `<div style="display:grid;grid-template-columns:42px 1fr 34px;align-items:center;gap:0.45rem">
+            <div style="font-size:0.72rem;color:#D5D7E0;font-family:'Noto Serif KR',sans-serif">${item.target}</div>
+            <div style="height:5px;background:rgba(255,255,255,0.055);border-radius:999px;overflow:hidden">
+              <div style="width:${item.pct}%;height:100%;background:${p.hex};border-radius:999px;box-shadow:0 0 8px ${p.hex}AA"></div>
+            </div>
+            <div style="font-size:0.68rem;color:rgba(232,233,240,0.58);text-align:right">${item.pct}%</div>
+          </div>`;
+        }).join('')}
+      </div>
+    `;
+    legendEl.appendChild(block);
+  });
+}</script>
+</body>
+</html>
+
     --gold: #C9A84C;
     --gold-dim: rgba(201,168,76,0.15);
     --purple: #7B5EA7;
